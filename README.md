@@ -33,22 +33,23 @@ The model achieves **98.90% accuracy**, **0.9787 macro precision**, **0.9954 mac
 ```mermaid
 flowchart TD
 
-A[Input MRI Image] --> B[Preprocessing<br/>Resize → CenterCrop → Normalize]
-B --> C[SafeResNet-18 Backbone<br/>(Modified ResNet-18)]
+A[Input MRI Image] --> B[Preprocessing\nResize, CenterCrop, Normalize]
+B --> C[SafeResNet-18 Backbone\nModified ResNet-18]
 C --> D[Global Average Pooling]
-D --> E[Fully Connected Layer<br/>4-Class Output]
+D --> E[Fully Connected Layer\n4-Class Output]
 E --> F[Predicted Class]
 
-C --> G[SHAP GradientExplainer<br/>(Background Set = 10 Images)]
-G --> H[SHAP Value Map<br/>Pixel-level Attribution]
+C --> G[SHAP GradientExplainer\nBackground set: 10 images]
+G --> H[SHAP Value Map\nPixel-level Attribution]
 
-subgraph Model Pipeline
-B --> C --> D --> E
+subgraph Model_Pipeline
+  B --> C --> D --> E
 end
 
 subgraph Explainability
-C --> G --> H
+  C --> G --> H
 end
+
 ```
 
 ---
