@@ -32,22 +32,63 @@ The model achieves **98.90% accuracy**, **0.9787 macro precision**, **0.9954 mac
 
 ```mermaid
 flowchart TD
+%% ================================
+%% Main Pipeline
+%% ================================
 
-A[Input MRI Image] --> B[Preprocessing\nResize, CenterCrop, Normalize]
-B --> C[SafeResNet-18 Backbone\nModified ResNet-18]
-C --> D[Global Average Pooling]
-D --> E[Fully Connected Layer\n4-Class Output]
-E --> F[Predicted Class]
+%% Input Stage
+A[Raw MRI Image\n(DICOM/JPEG/PNG)] --> B[Data Loader\nPyTorch Dataset]
 
-C --> G[SHAP GradientExplainer\nBackground set: 10 images]
-G --> H[SHAP Value Map\nPixel-level Attribution]
+%% Preprocessing
+B --> C[Preprocessing\nResize 248x496\nCenterCrop 224x224\nNormalize]
 
-subgraph Model_Pipeline
-  B --> C --> D --> E
+%% Model Backbone
+C --> D[SafeResNet-18\nResidual Blocks\nReLU (inplace=False)]
+
+%% Feature Processing
+D --> E[Global Average Pooling\n(512-D Feature Vector)]
+
+%% Classification Head
+E --> F[Fully Connected Layer\n4-Class Logits]
+
+%% Softmax & Prediction
+F --> G[Softmax Probabilities]
+G --> H[Predicted Class Label]
+
+%% ================================
+%% Explainability Branch
+%% ================================
+
+D --> I[SHAP GradientExplainer\nBackground = 10 Validation Images]
+I --> J[SHAP Value Computation\nGradient-based Attribution]
+J --> K[SHAP Output Maps\nPixel-level Feature Importance]
+
+%% ================================
+%% Outputs & Analysis
+%% ================================
+
+H --> L[Evaluation Metrics\nAccuracy / Precision / Recall / F1]
+K --> M[Explainability Reports\nHeatmaps, Contribution Scores]
+
+%% ================================
+%% Subgraphs - Grouping
+%% ================================
+
+subgraph Data_Pipeline[Data Pipeline]
+  B --> C
 end
 
-subgraph Explainability
-  C --> G --> H
+subgraph Model_Inference[Model Inference]
+  C --> D --> E --> F --> G --> H
+end
+
+subgraph Explainability_System[Explainability System]
+  D --> I --> J --> K
+end
+
+subgraph Outputs[Outputs]
+  H --> L
+  K --> M
 end
 
 ```
