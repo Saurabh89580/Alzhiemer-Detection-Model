@@ -32,64 +32,41 @@ The model achieves **98.90% accuracy**, **0.9787 macro precision**, **0.9954 mac
 
 ```mermaid
 flowchart TD
-%% ================================
-%% Main Pipeline
-%% ================================
 
-%% Input Stage
-A[Raw MRI Image\n(DICOM/JPEG/PNG)] --> B[Data Loader\nPyTorch Dataset]
+A[Raw MRI Image] --> B[Data Loader]
+B --> C[Preprocessing\nResize, Crop, Normalize]
 
-%% Preprocessing
-B --> C[Preprocessing\nResize 248x496\nCenterCrop 224x224\nNormalize]
+C --> D[SafeResNet-18\nResidual Blocks]
+D --> E[Global Average Pooling]
 
-%% Model Backbone
-C --> D[SafeResNet-18\nResidual Blocks\nReLU (inplace=False)]
+E --> F[Fully Connected Layer\nClass Scores]
+F --> G[Softmax]
+G --> H[Predicted Class]
 
-%% Feature Processing
-D --> E[Global Average Pooling\n(512-D Feature Vector)]
+D --> I[SHAP GradientExplainer\nBackground Set]
+I --> J[SHAP Value Computation]
+J --> K[SHAP Maps]
 
-%% Classification Head
-E --> F[Fully Connected Layer\n4-Class Logits]
+H --> L[Evaluation Metrics]
+K --> M[Explainability Reports]
 
-%% Softmax & Prediction
-F --> G[Softmax Probabilities]
-G --> H[Predicted Class Label]
-
-%% ================================
-%% Explainability Branch
-%% ================================
-
-D --> I[SHAP GradientExplainer\nBackground = 10 Validation Images]
-I --> J[SHAP Value Computation\nGradient-based Attribution]
-J --> K[SHAP Output Maps\nPixel-level Feature Importance]
-
-%% ================================
-%% Outputs & Analysis
-%% ================================
-
-H --> L[Evaluation Metrics\nAccuracy / Precision / Recall / F1]
-K --> M[Explainability Reports\nHeatmaps, Contribution Scores]
-
-%% ================================
-%% Subgraphs - Grouping
-%% ================================
-
-subgraph Data_Pipeline[Data Pipeline]
-  B --> C
+subgraph Data_Pipeline
+B --> C
 end
 
-subgraph Model_Inference[Model Inference]
-  C --> D --> E --> F --> G --> H
+subgraph Model_Inference
+C --> D --> E --> F --> G --> H
 end
 
-subgraph Explainability_System[Explainability System]
-  D --> I --> J --> K
+subgraph Explainability
+D --> I --> J --> K
 end
 
-subgraph Outputs[Outputs]
-  H --> L
-  K --> M
+subgraph Outputs
+H --> L
+K --> M
 end
+
 
 ```
 
