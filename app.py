@@ -27,7 +27,7 @@ from pathlib import Path
 # -------------------------
 # App configuration & paths
 # -------------------------
-st.set_page_config(page_title="NeuroScan AI", layout="wide", page_icon="🧠")
+st.set_page_config(page_title="Disease Detection Model", layout="wide", page_icon="🧠")
 
 PROJECT_ROOT = Path(".")
 MODEL_PATH = PROJECT_ROOT / "models" / "resnet18_model.pth"
@@ -46,200 +46,521 @@ CLASS_NAMES = ['Non Demented', 'Very mild Dementia', 'Mild Dementia', 'Moderate 
 # Premium CSS
 # -------------------------
 def load_css():
+    """
+    Production-grade CSS styling for Alzheimer's Detection Platform.
+    Implements medical-grade UI patterns with accessibility considerations.
+    """
     st.markdown(
         """
         <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
-
-        :root{
-            --bg-1: #071126;
-            --bg-2: #0b1a28; /* slightly closer to bg-1 for a gentler transition */
-            --glass-weak: rgba(255,255,255,0.02);
-            --glass-strong: rgba(255,255,255,0.03);
-            --muted: #9bb0c7;
-            --text: #dfeaf6;
-            --accent-a: rgba(140,170,200,0.04);
-            --accent-b: rgba(190,170,220,0.03);
-            --accent-edge: rgba(160,190,220,0.05);
+        /* ═══════════════════════════════════════════════════════════════
+           TYPOGRAPHY & FOUNDATIONAL VARIABLES
+           ═══════════════════════════════════════════════════════════════ */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+        
+        :root {
+            /* Medical-grade color palette - trust & professionalism */
+            --bg-primary: #0a0e17;
+            --bg-secondary: #0f1419;
+            --bg-elevated: #151a23;
+            
+            /* Glass morphism layers */
+            --glass-subtle: rgba(255, 255, 255, 0.02);
+            --glass-light: rgba(255, 255, 255, 0.04);
+            --glass-medium: rgba(255, 255, 255, 0.06);
+            --glass-strong: rgba(255, 255, 255, 0.08);
+            
+            /* Semantic colors */
+            --text-primary: #e5e9f0;
+            --text-secondary: #8a9bb0;
+            --text-tertiary: #606c7e;
+            
+            /* Medical-appropriate accent colors */
+            --accent-primary: #5e81ac;      /* Trust blue */
+            --accent-secondary: #88c0d0;    /* Calm cyan */
+            --accent-success: #a3be8c;      /* Health green */
+            --accent-warning: #ebcb8b;      /* Alert amber */
+            --accent-critical: #bf616a;     /* Critical red */
+            
+            /* Elevation & depth */
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.4);
+            --shadow-xl: 0 24px 64px rgba(0, 0, 0, 0.5);
+            
+            /* Animation durations */
+            --duration-fast: 0.15s;
+            --duration-base: 0.25s;
+            --duration-slow: 0.4s;
+            
+            /* Border radius system */
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --radius-xl: 18px;
         }
 
+        /* ═══════════════════════════════════════════════════════════════
+           ANIMATION LIBRARY
+           ═══════════════════════════════════════════════════════════════ */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(-15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+
+        /* ═══════════════════════════════════════════════════════════════
+           BASE APPLICATION STRUCTURE
+           ═══════════════════════════════════════════════════════════════ */
         .stApp {
-            /* Subtle layered background: soft linear gradient + faint radial highlights */
-            background:
-                radial-gradient(700px 300px at 50% 8%, rgba(140,170,200,0.02), transparent 45%),
-                linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 100%);
-            font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-            color: var(--text);
-            min-height: 100vh;
+            background-color: var(--bg-primary);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(94, 129, 172, 0.06) 0%, transparent 45%),
+                radial-gradient(circle at 90% 80%, rgba(136, 192, 208, 0.04) 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(163, 190, 140, 0.02) 0%, transparent 50%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: var(--text-primary);
+            font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        .block-container {
+            padding: 3rem 2rem;
+            max-width: 1200px;
+            animation: fadeIn var(--duration-slow) ease-out;
         }
 
-        .block-container { padding: 1.6rem 1.2rem; }
-
-        /* Glass card */
+        /* ═══════════════════════════════════════════════════════════════
+           GLASS CARD SYSTEM - Medical Context
+           ═══════════════════════════════════════════════════════════════ */
         .glass-card {
-            background: linear-gradient(180deg, rgba(255,255,255,0.014), rgba(255,255,255,0.008));
-            border: 1px solid var(--glass-weak);
-            backdrop-filter: blur(6px) saturate(105%);
-            -webkit-backdrop-filter: blur(6px) saturate(105%);
-            padding: 18px;
-            border-radius: 12px;
-            box-shadow: 0 6px 18px rgba(4,10,20,0.36);
-            color: var(--text);
-            transition: transform .14s ease, box-shadow .14s ease;
+            position: relative;
+            background: linear-gradient(
+                135deg,
+                var(--glass-subtle) 0%,
+                var(--glass-light) 100%
+            );
+            border: 1px solid var(--glass-light);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            padding: 28px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            transition: all var(--duration-base) cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeInUp 0.6s ease-out forwards;
+            overflow: hidden;
         }
+        
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                var(--accent-secondary),
+                transparent
+            );
+            opacity: 0;
+            transition: opacity var(--duration-base);
+        }
+        
         .glass-card:hover {
+            border-color: var(--glass-medium);
+            background: linear-gradient(
+                135deg,
+                var(--glass-light) 0%,
+                var(--glass-medium) 100%
+            );
             transform: translateY(-3px);
-            box-shadow: 0 10px 28px rgba(4,10,20,0.44);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .glass-card:hover::before {
+            opacity: 0.5;
+        }
+        
+        /* Card variants for different contexts */
+        .glass-card-info {
+            border-left: 3px solid var(--accent-primary);
+        }
+        
+        .glass-card-success {
+            border-left: 3px solid var(--accent-success);
+        }
+        
+        .glass-card-warning {
+            border-left: 3px solid var(--accent-warning);
+        }
+        
+        .glass-card-critical {
+            border-left: 3px solid var(--accent-critical);
         }
 
-        /* Title & subtitle */
+        /* ═══════════════════════════════════════════════════════════════
+           TYPOGRAPHY SYSTEM
+           ═══════════════════════════════════════════════════════════════ */
         .title {
-            font-size: 30px;
+            font-size: 2.5rem;
             font-weight: 800;
-            letter-spacing: -0.4px;
-            margin: 0;
-            background: linear-gradient(90deg, rgba(140,170,200,0.10), rgba(190,170,220,0.08));
+            letter-spacing: -0.04em;
+            color: #ffffff;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #ffffff 0%, var(--text-primary) 100%);
             -webkit-background-clip: text;
-            color: transparent;
-            display:inline-block;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 0.5s ease-out;
         }
+        
         .subtitle {
-            color: var(--muted);
-            margin-top: 6px;
-            margin-bottom: 0;
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            font-weight: 400;
+            line-height: 1.6;
+            max-width: 600px;
+            animation: fadeInUp 0.6s ease-out 0.1s backwards;
+        }
+        
+        .section-header {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+        }
+        
+        .metric-label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 4px;
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* ═══════════════════════════════════════════════════════════════
+           FORM CONTROLS & INPUTS
+           ═══════════════════════════════════════════════════════════════ */
+        .stButton > button {
+            position: relative;
+            border-radius: var(--radius-md);
+            padding: 0.65rem 1.5rem;
+            background: var(--glass-light) !important;
+            border: 1px solid var(--glass-medium) !important;
+            color: var(--text-primary) !important;
             font-weight: 500;
             font-size: 0.95rem;
+            transition: all var(--duration-base) cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
         }
-
-        .badge {
-            padding: 7px 12px;
-            border-radius: 999px;
-            font-weight: 700;
-            color: #071025;
-            background: rgba(255,255,255,0.05);
-            box-shadow: inset 0 -3px 8px rgba(0,0,0,0.04);
-            font-size: 0.95rem;
+        
+        .stButton > button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: var(--accent-primary);
+            opacity: 0.1;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
         }
-
-        .small-muted { color: var(--muted); font-size: 0.9rem; }
-
-        img {
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.02);
+        
+        .stButton > button:hover {
+            background: var(--glass-medium) !important;
+            border-color: var(--accent-primary) !important;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
         }
-
-        /* Tabs */
-        .stTabs [role="tab"] { color: var(--muted); }
-        .stTabs [role="tab"][aria-selected="true"] {
-            color: var(--text);
-            font-weight:700;
-            box-shadow: inset 0 -2px 0 var(--accent-edge);
+        
+        .stButton > button:hover::before {
+            width: 300px;
+            height: 300px;
         }
-
-        /* Buttons & download controls */
-        .stButton>button, .stDownloadButton>button, .st-ae {
-            background: transparent;
-            color: var(--text) !important;
-            border: 1px solid var(--glass-weak);
-            padding: 8px 12px;
-            border-radius: 10px;
+        
+        .stButton > button:active {
+            transform: translateY(0);
+        }
+        
+        /* Primary action button */
+        .stButton > button[kind="primary"] {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)) !important;
+            border: none !important;
+            color: #ffffff !important;
             font-weight: 600;
-            box-shadow: 0 6px 12px rgba(3,9,23,0.18);
-            transition: background .12s ease, transform .08s ease;
+            box-shadow: 0 4px 12px rgba(94, 129, 172, 0.3);
         }
-        .stButton>button:hover, .stDownloadButton>button:hover {
-            background: rgba(255,255,255,0.015);
+        
+        .stButton > button[kind="primary"]:hover {
+            box-shadow: 0 6px 20px rgba(94, 129, 172, 0.4);
             transform: translateY(-2px);
         }
-
-        .brand-accent {
-            height: 3px;
-            border-radius: 3px;
-            background: linear-gradient(90deg, var(--accent-a), var(--accent-b));
-            opacity: 0.10;
-            margin-top: 10px;
-            margin-bottom: 14px;
+        
+        /* Input fields */
+        .stTextInput > div > div > input,
+        .stNumberInput > div > div > input,
+        .stSelectbox > div > div > select {
+            background: var(--glass-subtle) !important;
+            border: 1px solid var(--glass-light) !important;
+            border-radius: var(--radius-md) !important;
+            color: var(--text-primary) !important;
+            padding: 0.6rem 0.9rem !important;
+            transition: all var(--duration-base);
         }
-
-        @media (max-width: 640px) {
-            .title { font-size: 20px; }
-            .block-container { padding: 0.9rem; }
-            .glass-card { padding: 12px; border-radius: 10px; }
+        
+        .stTextInput > div > div > input:focus,
+        .stNumberInput > div > div > input:focus,
+        .stSelectbox > div > div > select:focus {
+            border-color: var(--accent-primary) !important;
+            background: var(--glass-light) !important;
+            box-shadow: 0 0 0 3px rgba(94, 129, 172, 0.1) !important;
         }
-
-        /* Sidebar */
-        section[data-testid="stSidebar"] {
-            background: linear-gradient(180deg, rgba(255,255,255,0.012), rgba(255,255,255,0.006));
-            border: 1px solid rgba(255,255,255,0.02);
-            padding: 14px;
-            border-radius: 10px;
-            box-shadow: 0 8px 22px rgba(2,6,23,0.38);
-            margin: 10px;
+        
+        /* File uploader */
+        [data-testid="stFileUploader"] {
+            background: var(--glass-subtle);
+            border: 2px dashed var(--glass-medium);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            transition: all var(--duration-base);
         }
-
-        section[data-testid="stSidebar"] .stMarkdown h2,
-        section[data-testid="stSidebar"] .stMarkdown h3,
-        section[data-testid="stSidebar"] .stMarkdown p,
-        section[data-testid="stSidebar"] label {
-            color: var(--text);
+        
+        [data-testid="stFileUploader"]:hover {
+            border-color: var(--accent-primary);
+            background: var(--glass-light);
         }
-        section[data-testid="stSidebar"] .stMarkdown p { color: var(--muted); margin-top: 6px; }
-
-        /* Inputs look compact and glassy */
-        section[data-testid="stSidebar"] .stFileUploader,
-        section[data-testid="stSidebar"] .stSelectbox,
-        section[data-testid="stSidebar"] .stMultiSelect,
-        section[data-testid="stSidebar"] .stRadio,
-        section[data-testid="stSidebar"] .stSlider {
-            background: rgba(255,255,255,0.01);
-            border: 1px solid rgba(255,255,255,0.015);
-            padding: 8px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
-
-        section[data-testid="stSidebar"] .stButton>button,
-        section[data-testid="stSidebar"] .stDownloadButton>button {
+        /* ═══════════════════════════════════════════════════════════════
+           TAB NAVIGATION SPANNING
+           ═══════════════════════════════════════════════════════════════ */
+        .stTabs [role="tablist"] {
+            display: flex;
             width: 100%;
-            background: transparent;
-            color: var(--text) !important;
-            border-radius: 10px;
-            padding: 8px 12px;
-            font-weight: 600;
-            border: 1px solid rgba(255,255,255,0.02);
-            box-shadow: 0 6px 12px rgba(3,9,23,0.12);
+            gap: 2px;
+            
         }
 
-        section[data-testid="stSidebar"] .stCheckbox>div,
-        section[data-testid="stSidebar"] .stSwitch>div {
-            padding: 6px 4px;
-            border-radius: 8px;
-        }
-        section[data-testid="stSidebar"] .stCheckbox>div label,
-        section[data-testid="stSidebar"] .stSwitch>div label {
-            color: var(--text);
-            font-weight: 600;
+        .stTabs [role="tab"] {
+            flex: 1;
+            text-align: center;
+            justify-content: center;
+            padding: 12px 0px;
+            transition: all var(--duration-base) ease;
+            border-radius: var(--radius-md);
         }
 
-        section[data-testid="stSidebar"] input[type="file"] {
-            color: var(--muted);
+        .stTabs [role="tab"]:hover {
+            background: var(--glass-subtle);
+            color: var(--accent-primary) !important;
         }
 
-        section[data-testid="stSidebar"] .small-muted {
-            color: var(--muted);
-            font-size: 0.85rem;
+        .stTabs [role="tab"][aria-selected="true"] {
+            color: var(--accent-primary) !important;
+            border-bottom-color: var(--accent-primary) !important;
+            background: rgba(94, 129, 172, 0.03);
+        }
+        /* ═══════════════════════════════════════════════════════════════
+           SIDEBAR NAVIGATION
+           ═══════════════════════════════════════════════════════════════ */
+        [data-testid="stSidebar"] {
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            border-right: 1px solid var(--glass-light);
+            box-shadow: var(--shadow-md);
+        }
+        
+        [data-testid="stSidebar"] > div:first-child {
+            padding-top: 2rem;
+        }
+        
+        [data-testid="stSidebar"] .element-container {
+            animation: slideInRight 0.4s ease-out backwards;
+        }
+        
+        [data-testid="stSidebar"] .element-container:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+        
+        [data-testid="stSidebar"] .element-container:nth-child(3) {
+            animation-delay: 0.2s;
         }
 
-        /* Fallback selectors for nested sidebar divs used by Streamlit */
-        [data-testid="stSidebar"] .css-1d391kg, [data-testid="stSidebar"] .css-1oe6wy0 {
-            background: transparent;
+        /* ═══════════════════════════════════════════════════════════════
+           DATA VISUALIZATION ENHANCEMENTS
+           ═══════════════════════════════════════════════════════════════ */
+        .stPlotlyChart {
+            background: var(--glass-subtle);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            border: 1px solid var(--glass-light);
+        }
+        
+        /* Dataframe styling */
+        [data-testid="stDataFrame"] {
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid var(--glass-light);
         }
 
+        /* ═══════════════════════════════════════════════════════════════
+           ALERT & NOTIFICATION COMPONENTS
+           ═══════════════════════════════════════════════════════════════ */
+        .stAlert {
+            background: var(--glass-light) !important;
+            border-radius: var(--radius-md) !important;
+            border-left: 4px solid var(--accent-primary) !important;
+            backdrop-filter: blur(10px);
+            animation: fadeInUp 0.4s ease-out;
+        }
+        
+        .stSuccess {
+            border-left-color: var(--accent-success) !important;
+        }
+        
+        .stWarning {
+            border-left-color: var(--accent-warning) !important;
+        }
+        
+        .stError {
+            border-left-color: var(--accent-critical) !important;
+        }
+
+        /* ═══════════════════════════════════════════════════════════════
+           PROGRESS & LOADING STATES
+           ═══════════════════════════════════════════════════════════════ */
+        .stProgress > div > div > div {
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary)) !important;
+            border-radius: var(--radius-sm);
+        }
+        
+        .stSpinner > div {
+            border-top-color: var(--accent-primary) !important;
+        }
+
+        /* ═══════════════════════════════════════════════════════════════
+           SCROLLBAR CUSTOMIZATION
+           ═══════════════════════════════════════════════════════════════ */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--glass-medium);
+            border-radius: var(--radius-sm);
+            border: 2px solid var(--bg-primary);
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--glass-strong);
+        }
+
+        /* ═══════════════════════════════════════════════════════════════
+           ACCESSIBILITY & FOCUS STATES
+           ═══════════════════════════════════════════════════════════════ */
+        *:focus-visible {
+            outline: 2px solid var(--accent-primary);
+            outline-offset: 2px;
+            border-radius: var(--radius-sm);
+        }
+
+        /* ═══════════════════════════════════════════════════════════════
+           RESPONSIVE DESIGN
+           ═══════════════════════════════════════════════════════════════ */
+        @media (max-width: 768px) {
+            .block-container {
+                padding: 1.5rem 1rem;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+            
+            .glass-card {
+                padding: 20px;
+            }
+        }
+
+        /* ═══════════════════════════════════════════════════════════════
+           UTILITY CLASSES
+           ═══════════════════════════════════════════════════════════════ */
+        .fade-in {
+            animation: fadeIn var(--duration-base) ease-out;
+        }
+        
+        .slide-in-right {
+            animation: slideInRight var(--duration-base) ease-out;
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .monospace {
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-variant-ligatures: none;
+        }
+        
+        /* Divider */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--glass-medium), transparent);
+            margin: 2rem 0;
+        }
         </style>
         """,
         unsafe_allow_html=True,
     )
-
 load_css()
 
 # -------------------------
@@ -315,7 +636,7 @@ DEVICE = helpers.get("device")
 # Top header
 # -------------------------
 st.markdown("<div style='display:flex;align-items:center;gap:18px'>", unsafe_allow_html=True)
-st.markdown("<div><h1 class='title'>NeuroScan AI</h1><div class='subtitle'>Alzheimer MRI analysis — ResNet18 · Explainable AI (Grad-CAM & SHAP)</div></div>", unsafe_allow_html=True)
+st.markdown("<div><h1 class='title'>Alzheimer’s Disease Detection Model</h1><div class='subtitle'>Alzheimer MRI analysis — ResNet18 · Explainable AI (Grad-CAM & SHAP)</div></div>", unsafe_allow_html=True)
 st.markdown("</div>", unsafe_allow_html=True)
 
 # Sidebar controls
@@ -371,7 +692,7 @@ else:
         with col2:
             if pred_idx is not None:
                 badge_color = "#4ade80" if pred_idx == 0 else ("#facc15" if pred_idx == 1 else "#fb7185")
-                st.markdown(f"<div class='glass-card'><h3>Result</h3><div><span class='badge' style='background:{badge_color};color:black'>{CLASS_NAMES[pred_idx]}</span> <span class='small-muted' style='margin-left:12px'>Confidence: {conf_val:.2%}</span></div><p class='small-muted' style='margin-top:10px'>Model: ResNet18</p></div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='glass-card'><h3>Result</h3><div><span class='badge' style='padding: 4px 8px;border-radius: px; background:{badge_color};color:black'>{CLASS_NAMES[pred_idx]}</span> <span class='small-muted' style='margin-left:12px'>Confidence: {conf_val:.2%}</span></div><p class='small-muted' style='margin-top:10px'>Model: ResNet18</p></div>", unsafe_allow_html=True)
             else:
                 st.info("No prediction available")
 
@@ -380,7 +701,6 @@ else:
 
         # Grad-CAM
         with tab1:
-            st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
             st.subheader("Grad-CAM")
             if gradcam is None:
                 st.warning("Grad-CAM utility not loaded.")
@@ -402,7 +722,6 @@ else:
 
         # SHAP
         with tab2:
-            st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
             st.subheader("SHAP Explainability")
             if shap_manager is None:
                 st.warning("SHAP manager not loaded.")
@@ -428,7 +747,6 @@ else:
 
         # Clinical report
         with tab3:
-            st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
             st.subheader("Clinical-style Explanation")
             if mri_explainer is None:
                 st.warning("MRI explainer not available.")
@@ -451,7 +769,6 @@ else:
 
         # Difficulty
         with tab4:
-            st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
             st.subheader("Model Certainty & Difficulty")
             if difficulty is None:
                 st.warning("Difficulty analyzer not loaded.")
