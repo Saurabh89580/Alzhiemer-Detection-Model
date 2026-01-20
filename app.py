@@ -692,7 +692,7 @@ else:
         with col2:
             if pred_idx is not None:
                 badge_color = "#4ade80" if pred_idx == 0 else ("#facc15" if pred_idx == 1 else "#fb7185")
-                st.markdown(f"<div class='glass-card'><h3>Result</h3><div><span class='badge' style='padding: 4px 8px;border-radius: px; background:{badge_color};color:black'>{CLASS_NAMES[pred_idx]}</span> <span class='small-muted' style='margin-left:12px'>Confidence: {conf_val:.2%}</span></div><p class='small-muted' style='margin-top:10px'>Model: ResNet18</p></div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='glass-card'><h3>Result</h3><div><span class='badge' style='padding: 4px 8px;border-radius: 5px; background:{badge_color};color:black'>{CLASS_NAMES[pred_idx]}</span> <span class='small-muted' style='margin-left:12px'>Confidence: {conf_val:.2%}</span></div><p class='small-muted' style='margin-top:10px'>Model: ResNet18</p></div>", unsafe_allow_html=True)
             else:
                 st.info("No prediction available")
 
