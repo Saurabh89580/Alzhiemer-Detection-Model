@@ -42,7 +42,7 @@ seaborn==0.13.2
 smmap==5.0.2
 stack-data==0.6.3
 streamlit==1.51.0
-sympy==1.13.1
+sympy>=1.13.3
 tenacity==9.1.2
 tifffile==2025.5.10
 toml==0.10.2
